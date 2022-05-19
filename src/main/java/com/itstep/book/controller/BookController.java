@@ -4,7 +4,6 @@ import com.itstep.book.model.Book;
 import com.itstep.book.service.BookService;
 import com.itstep.book.util.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +15,7 @@ public class BookController {
     private BookService bookService;
 
     @PostMapping("/book/create")
-    public BaseResponse createBook(@RequestBody Book book, Model model) {
+    public BaseResponse createBook(@RequestBody Book book) {
         return bookService.createBook(book);
     }
 
@@ -27,7 +26,7 @@ public class BookController {
 
 
     @PutMapping("/book/update")
-    public BaseResponse updateBook(@RequestBody Book book, Model model) {
+    public BaseResponse updateBook(@RequestBody Book book) {
         return bookService.createBook(book);
     }
 

@@ -2,7 +2,6 @@ package com.itstep.book.service.impl;
 
 import com.itstep.book.model.Book;
 import com.itstep.book.model.User;
-import com.itstep.book.repository.BookRepository;
 import com.itstep.book.repository.UserRepository;
 import com.itstep.book.service.BookService;
 import com.itstep.book.service.UserService;
@@ -10,7 +9,6 @@ import com.itstep.book.util.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -39,7 +37,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public BaseResponse updateUser(User user) {
         User user1 = repository.findById(user.getId()).orElse(null);
-        if(Objects.nonNull(user1)){
+        if (Objects.nonNull(user1)) {
             user1.setName(user.getName());
             user1.setBooks(service.findBooksByIds(user.getBooks().stream().map(Book::getId).collect(Collectors.toList())));
             repository.save(user1);
@@ -63,12 +61,19 @@ public class UserServiceImpl implements UserService {
     public BaseResponse takeBook(Integer idOfBook, Integer id) {
         User user1 = repository.findById(id).orElse(null);
         Book book = service.getBookById(idOfBook);
-        if(user1.getBooks().contains(book)) {
-            return new BaseResponse(400, "Book is already with this user", null);
+        if (Objects.isNull(user1)) {
+            return new BaseResponse(400, "User was not find", null);
         } else {
-            user1.getBooks().add(book);
-            repository.save(user1);
-            return new BaseResponse(200, "Book is successfully added", user1);
+            if (user1.getBooks().contains(book)) {
+                return new BaseResponse(400, "Book is already with this user", null);
+            } else if (!book.isAtUser()) {
+                user1.getBooks().add(book);
+                book.setAtUser(true);
+                repository.save(user1);
+                return new BaseResponse(200, "Book is successfully added", user1);
+            } else {
+                return new BaseResponse(400, "Book is at another user", null);
+            }
         }
     }
 
@@ -76,13 +81,19 @@ public class UserServiceImpl implements UserService {
     public BaseResponse returnBook(Integer idOfBook, Integer id) {
         User user1 = repository.findById(id).orElse(null);
         Book book = service.getBookById(idOfBook);
-        if(user1.getBooks().contains(book)) {
-            user1.getBooks().remove(book);
-            repository.save(user1);
-            return new BaseResponse(200, "Book is successfully added", user1);
-
+        if (Objects.isNull(user1)) {
+            return new BaseResponse(400, "User was not find", null);
         } else {
-            return new BaseResponse(400, "Book is not at user", null);
+            if (user1.getBooks().contains(book)) {
+                user1.getBooks().remove(book);
+                repository.save(user1);
+                book.setAtUser(false);
+                service.createBook(book);
+                return new BaseResponse(200, "Book is successfully added", user1);
+
+            } else {
+                return new BaseResponse(400, "Book is not at user", null);
+            }
         }
     }
 

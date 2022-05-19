@@ -4,7 +4,6 @@ import com.itstep.book.model.User;
 import com.itstep.book.service.UserService;
 import com.itstep.book.util.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +14,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/user/create")
-    public BaseResponse createUser(@RequestBody User user, Model model) {
+    public BaseResponse createUser(@RequestBody User user) {
         return userService.createUser(user);
     }
 
@@ -26,7 +25,7 @@ public class UserController {
 
 
     @PutMapping("/user/update")
-    public BaseResponse updatUser(@RequestBody User user, Model model) {
+    public BaseResponse updatUser(@RequestBody User user) {
         return userService.createUser(user);
     }
 
@@ -37,14 +36,15 @@ public class UserController {
     }
 
     @PutMapping("/user/add/{id}/{idOfBook}")
-    public BaseResponse addBookToUser (@PathVariable Integer id, @PathVariable Integer idOfBook, Model model) {
+    public BaseResponse addBookToUser (@PathVariable Integer id, @PathVariable Integer idOfBook) {
         return userService.takeBook(idOfBook, id);
     }
 
     @DeleteMapping("/user/delete/{id}/{idOfBook}")
-    public BaseResponse deleteBookFromUser (@PathVariable Integer id, @PathVariable Integer idOfBook, Model model) {
+    public BaseResponse deleteBookFromUser (@PathVariable Integer id, @PathVariable Integer idOfBook) {
         return userService.returnBook(idOfBook, id);
     }
+
 
 
 
